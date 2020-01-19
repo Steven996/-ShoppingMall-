@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: neuMall-gateway
+eureka:
+  client:
+    service-url:
+      dafaultZone: http://127.0.0.1:8761/eureka
+server:
+  port: 8080
+logging:
+  level:
+    com.neusoft: debug
+zuul:
+  routes:
+    admin:
+      path: /admin/**
+      serviceId: neuMall-admin
+    mall:
+      path: /mall/**
+      serviceId: neuMall-mall
+
+
+excludePath:
+
+
+
+
+
+

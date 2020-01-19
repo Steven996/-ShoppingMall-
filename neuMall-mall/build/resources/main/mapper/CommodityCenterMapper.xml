@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.mall.commoditycenter.dao.CommodityCenterDao">
+<insert id="addShoppingCart" parameterType="com.neusoft.mall.goods.entity.Shop">
+    insert into t_shop values(#{shopId},#{commodiyId},#{shopNumber},#{customerId},#{createdBy},now(),#{lastModifiedBy},now(),#{isDeleted},#{sortNo},#{version})
+</insert>
+<select id="addOrderSuccess" parameterType="com.neusoft.mall.orderCenter.entity.Order" resultType="com.neusoft.mall.orderCenter.entity.Order">
+    select order_number,order_price from t_order where order_id = #{orderId}
+</select>
+    <select id="getPrice" parameterType="String" resultType="com.neusoft.mall.goods.entity.Commodity">
+        select commodity_retail_price form t_commodity where commodity_id=#{commodityId}
+    </select>
+    <insert id="addOrder" parameterType="com.neusoft.mall.orderCenter.entity.Order">
+        insert into t_order values(#{orderId},#{orderNumber},#{orderPrice},#{cutomerId},#{orderState},#{orderDate},#{orderAddress},#{receiveTel},#{receiveContact},#{orderRemark},#{ccreatedBy},now(),#{lastModifiedBy},now(),#{isDeleted},#{sortNo},#{version})
+    </insert>
+    <insert id="addOrderDetail" parameterType="com.neusoft.mall.orderCenter.entity.OrderDetail">
+        insert into t_order_detail values(#{orderDetailId},#{orderId},#{commodityId},#{commodityPrice},#{commodityNum},#{commodityTotalPrice},{ccreatedBy},now(),#{lastModifiedBy},now(),#{isDeleted},#{sortNo},#{version})
+    </insert>
+    <select id="getCommodityCenterTrading" parameterType="String" resultType="com.neusoft.mall.commoditycenter.entity.TradeVo">
+        select a.created_by,b.customer_name,a.gmt_create,a.commodity_price,a.commodity_num,a.version from t_order_detail a,t_customer b where a.created_by=b.customer_id and a.commodity_id = #{commodityId}
+    </select>
+    <select id="getCommodityCenterSimilar"  parameterType="String" resultType="com.neusoft.mall.goods.entity.Commodity">
+        select commodity_code,picture_address,commodity_name,commodity_retail_price,version from t_commodity where category_first = #{categoryFirst}
+    </select>
+</mapper>

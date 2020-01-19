@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.mall.order.dao.OrderDao">
+
+    <select id="getOrders" parameterType="com.neusoft.mall.order.pojo.OrderVo" resultType="com.neusoft.mall.orderCenter.entity.Order">
+        SELECT
+        order_id,
+        order_number,
+        order_price,
+        tor.customer_id,
+        customer_name,
+        order_state,
+        order_date,
+        receive_tel,
+        order_address,
+        receive_contact,
+        order_remark,
+        tor.version
+        FROM
+        t_order tor
+        JOIN t_customer ON tor.customer_id = t_customer.customer_id
+        WHERE
+        tor.is_deleted = 0
+        <if test="orderNumber != null and ''!=orderNumber">AND order_number = #{orderNumber}</if>
+        <if test="orderState != null and ''!=orderState">AND order_state = #{orderState}</if>
+
+        <if test="orderDateStart != null and ''!=orderDateStart">
+        AND DATE_FORMAT(order_date,'%Y-%m-%d') >= #{orderDateStart}
+         </if>
+        <if test="orderDateEnd != null and ''!=orderDateEnd"> AND #{orderDateEnd} >= DATE_FORMAT(order_date,'%Y-%m-%d')</if>
+	 </select>
+
+    <select id="getOrderDetail" parameterType="String" resultType="com.neusoft.mall.orderCenter.entity.Order">
+      SELECT
+        order_number,
+        order_price,
+        tor.customer_id,
+        customer_name,
+        order_state,
+        order_date,
+        receive_tel,
+        order_address,
+        receive_contact,
+        order_remark,
+        tor.version
+    FROM
+        t_order tor
+        JOIN t_customer tc ON tor.customer_id = tc.customer_id
+    WHERE
+        tor.order_id = #{orderId}
+    </select>
+
+    <select id="getOrderDetailPro" parameterType="String" resultType="com.neusoft.mall.order.pojo.OrderDetail">
+      SELECT
+        commodity_first_picture,
+        commodity_name,
+        commodity_code,
+        commodity_price,
+        commodity_num,
+        commodity_total_price
+    FROM
+        t_order_detail
+        JOIN t_commodity ON t_order_detail.commodity_id = t_commodity.commodity_id
+    WHERE
+        t_order_detail.order_id =#{orderId}
+	</select>
+
+    <update id="updateOrderStatus" parameterType="com.neusoft.mall.order.pojo.OrderChangeStatusVo">
+     update t_order
+     set order_state =#{orderState},
+         version = version+1,
+        gmt_modified = now(),
+        last_modified_by = #{lastModifiedBy}
+     where order_number in
+        <foreach item="item" index="index" collection="orderNumberList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+</mapper>

@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: neuMall-mall
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/mall?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    username: root
+    password: root
+  activemq:
+    broker-url: tcp://192.168.226.145:61616  #这是我们的activeMq的服务器地址
+    user: admin  #用户名和密码，都是默认的admin
+    password: admin
+    pool:  #资源池
+    enabled:  true
+    max-connections: 100 #定义默认消息队列名称
+queueName: queueList
+topicName: topicList
+out.queue: resultQueueList
+out.topic: resultTopicList
+eureka:
+  client:
+    service-url:
+      dafaultZone: http://127.0.0.1:8761/eureka
+server:
+  port: 8082
+mybatis:
+  #指定全局配置文件的位置
+  mapper-locations: classpath:mapper/*Mapper.xml
+  #开启驼峰命名转换
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  level:
+    com.neusoft.mall : debug   # 打印sql
+#fdfs:
+#  racker_server: http://39.105.73.110/
+redis:
+  # Redis服务器地址
+  host: 39.105.73.110
+  # Redis服务器连接端口
+  port: 6379
+  # Redis服务器连接密码（默认为空）
+  password: hanjingzhan1314
+  jedis:
+    pool:
+      # 连接池最大连接数（使用负值表示没有限制）
+      max-active: 200
+      # 连接池最大阻塞等待时间（使用负值表示没有限制）
+      max-wait: -1
+      # 连接池中的最大空闲连接
+      max-idle: 10
+      # 连接池中的最小空闲连接
+      min-idle: 0
+
+
+
+

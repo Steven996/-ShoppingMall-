@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.mall.commodityunit.dao.CommodityUnitDao">
+    <select id="getCommodityUnitListPage" parameterType="com.neusoft.mall.commodityunit.entity.CommodityUnitVo" resultType="com.neusoft.mall.commodityunit.entity.CommodityUnit">
+        select unit_id,unit_name,version from t_commodity_unit
+        <if test="unitName!=null">where unit_name = #{unitName} </if>
+    </select>
+    <select id="getExistCommodityUnit" parameterType="String" resultType="com.neusoft.mall.commodityunit.entity.CommodityUnit">
+        select unit_name from t_commodity_unit where unit_name=#{unitName} and is_deleted=0
+    </select>
+    <select id="getIfDeleted" parameterType="String" resultType="com.neusoft.mall.commodityunit.entity.CommodityUnit">
+        SELECT unit_name,is_deleted FROM t_commodity_unit where unit_name=#{unitName}
+    </select>
+    <select id="getCommodityUnitList" resultType="com.neusoft.mall.commodityunit.entity.CommodityUnit">
+        select unit_id,unit_name,version from t_commodity_unit
+    </select>
+    <insert id="addCommodityUnit" parameterType="com.neusoft.mall.commodityunit.entity.CommodityUnit" >
+        insert into  t_commodity_unit values (#{unitId},#{unitName},#{createdBy},now(),#{lastModifiedBy},now(),#{isDeleted},#{sortNo},#{version})
+    </insert>
+    <update id="updateCommodityUnit" parameterType="com.neusoft.mall.commodityunit.entity.CommodityUnit" >
+       update t_commodity_unit set last_modified_by = #{lastModifiedBy},gmt_modified = now()
+        <if test="unitName!=null">and unit_name=#{unitName} </if>
+        where unit_id = #{unitId} and version = #{version}
+    </update>
+    <update id="addVersion" parameterType="com.neusoft.mall.customer.entity.Customer" >
+        update t_commodity_unit set version = #{version} where unit_id=#{unitId}
+    </update>
+    <select id="getCommodityUnitDetail" resultType="com.neusoft.mall.commodityunit.entity.CommodityUnit">
+        select unit_id,unit_name,version from t_commodity_unit where unit_id=#{unitId}
+    </select>
+    <update id="deleteCommodityUnit" parameterType="com.neusoft.mall.commodityunit.entity.CommodityUnit">
+        delete from t_commodity_unit where unit_id = #{unitId}
+    </update>
+</mapper>

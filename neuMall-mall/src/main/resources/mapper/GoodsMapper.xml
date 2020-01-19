@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.mall.goods.dao.GoodsDao">
+
+    <!--获取商品信息-->
+    <select id="getGoodsList" parameterType="com.neusoft.mall.goods.entity.CommodityVo" resultType="com.neusoft.mall.goods.entity.CommodityDTO">
+        select
+        c.commodity_code,
+        c.commodity_first_picture as picture_address,
+        c.commodity_name,
+        c.category_first,
+        c1.category_name as category_first_name,
+        c.category_second,
+        c2.category_name as category_second_name,
+        c.commodity_retail_price,
+        c.commodity_original_price,
+        c.commodity_totalCount,
+        c.commodity_is_sold,
+        c.commodity_id,
+        c.commodity_color,
+        c.commodity_unit_id,
+        c.commodity_is_recommend,
+        c.commodity_desc,
+        c.version
+        from t_commodity c left join t_category c1 on c.category_first=c1.category_id left join t_category c2 on c.category_second=c2.category_id
+        where
+        c.is_deleted = 0
+        <if test="commodityCode != null and commodityCode != ''">
+            and c.commodity_code like concat('%', #{commodityCode}, '%')
+        </if>
+        <if test="commodityName != null and commodityName != ''">
+            and c.commodity_name like concat('%', #{commodityName}, '%')
+        </if>
+        <if test="commodityIsSold != null">
+            and c.commodity_is_sold = #{commodityIsSold}
+        </if>
+        <if test="categoryFirst != null and categoryFirst != ''">
+            and c1.category_id = #{categoryFirst}
+        </if>
+        <if test="categorySecond != null and categorySecond != ''">
+            and c2.category_id = #{categorySecond}
+        </if>
+        order by c.gmt_create desc
+    </select>
+
+    <!--查询分类名字-->
+    <select id="getCategoryName" parameterType="String" resultType="String">
+        select category_name from t_category where category_id= #{categoryId}
+    </select>
+
+    <!--更新上下架信息-->
+    <update id="updateGoodsIsSell" parameterType="com.neusoft.mall.goods.entity.Commodity">
+        update t_commodity
+            set
+            commodity_is_sold = #{commodityIsSold},
+            version        = version + 1,
+            gmt_modified = now(),
+            last_modified_by   = #{lastModifiedBy,jdbcType=VARCHAR}
+        where commodity_id=#{commodityId}
+        and version = #{version}
+    </update>
+
+    <!--获取商品详情-->
+    <select id="getGoodsDetail" parameterType="com.neusoft.mall.goods.entity.Commodity" resultType="com.neusoft.mall.goods.entity.GoodsDetail">
+        select
+        c.commodity_name,
+        c.category_first,
+        c1.category_name as category_first_name,
+        c.category_second,
+        c2.category_name as category_second_name,
+        c.commodity_retail_price,
+        c.commodity_original_price,
+        c.commodity_is_sold,
+        c.commodity_inventory,
+        c.commodity_color,
+        c.commodity_unit_id,
+        c.commodity_is_recommend,
+        c.commodity_desc,
+        c.version
+        from t_commodity c left join t_category c1 on c.category_first=c1.category_id left join t_category c2 on c.category_second=c2.category_id
+        where
+        c.is_deleted = 0  and commodity_id = #{commodityId}
+    </select>
+    <!--获取商品轮播图列表-->
+    <select id="getGoodsPics" parameterType="string" resultType="com.neusoft.mall.goods.entity.CommodityPicDTO">
+        select * from t_commodity_pic where commodity_id = #{commodityId} and is_deleted = 0
+    </select>
+
+    <!--删除商品-->
+    <update id="deleteGoods" parameterType="com.neusoft.mall.goods.entity.Commodity">
+        update t_commodity
+           set is_deleted     = 1,
+               version      = version + 1,
+               gmt_modified = now(),
+               last_modified_by   = #{lastModifiedBy,jdbcType=VARCHAR}
+         where commodity_id=#{commodityId}
+    </update>
+
+    <!--添加轮播图-->
+    <insert id="addPic" parameterType="com.neusoft.mall.goods.entity.CommodityPic">
+        insert into t_commodity_pic
+           (picture_id ,
+            picture_address ,
+            picture_is_fist_picture,
+            commodity_id ,
+            created_by ,
+            gmt_create,
+            last_modified_by,
+            gmt_modified,
+            is_deleted,
+            sort_no,
+            version
+          ) values (
+            #{pictureId,jdbcType=VARCHAR},
+            #{pictureAddress,jdbcType=VARCHAR},
+            #{pictureIsFistPicture},
+            #{commodityId,jdbcType=VARCHAR},
+            #{createdBy,jdbcType=VARCHAR},
+            now(),
+            #{lastModifiedBy,jdbcType=VARCHAR},
+            now(),
+            0,
+            0,
+            0)
+    </insert>
+
+    <!--新增商品-->
+    <insert id="addGoods" parameterType="com.neusoft.mall.goods.entity.UpdateGoods">
+        insert into t_commodity
+           (commodity_code ,
+            commodity_id ,
+            commodity_name,
+            commodity_first_picture ,
+            commodity_color ,
+            commodity_original_price,
+            commodity_retail_price,
+            commodity_unit_id,
+            commodity_is_sold,
+            commodity_is_recommend,
+            commodity_inventory,
+            commodity_is_lack,
+            commodity_totalCount,
+            category_first,
+            category_second,
+            commodity_desc,
+            created_by,
+            gmt_create,
+            last_modified_by,
+            gmt_modified,
+            is_deleted,
+            sort_no,
+            version
+          ) values (
+            #{commodityCode,jdbcType=VARCHAR},
+            #{commodityId,jdbcType=VARCHAR},
+            #{commodityName,jdbcType=VARCHAR},
+            #{commodityFirstPicture,jdbcType=VARCHAR},
+            #{commodityColor,jdbcType=VARCHAR},
+            #{commodityOriginalPrice,jdbcType=DECIMAL},
+            #{commodityRetailPrice,jdbcType=DECIMAL},
+            #{commodityUnitId,jdbcType=VARCHAR},
+            #{commodityIsSold},
+            #{commodityIsRecommend},
+            #{commodityInventory},
+            #{commodityIsLack},
+            #{commodityTotalCount},
+            #{categoryFirst,jdbcType=VARCHAR},
+            #{categorySecond,jdbcType=VARCHAR},
+            #{commodityDesc,jdbcType=VARCHAR},
+            #{createdBy,jdbcType=VARCHAR},
+            now(),
+            #{lastModifiedBy,jdbcType=VARCHAR},
+            now(),
+            0,
+            0,
+            0)
+    </insert>
+
+    <!--删除轮播图-->
+    <delete id="deletePics" parameterType="string">
+        delete from t_commodity_pic where commodity_id = #{commodityId}
+    </delete>
+
+    <update id="updateGoods" parameterType="com.neusoft.mall.goods.entity.UpdateGoods">
+        update t_commodity
+        set
+            commodity_name = #{commodityName},
+            commodity_first_picture = #{commodityFirstPicture},
+            commodity_color = #{commodityColor} ,
+            commodity_original_price = #{commodityOriginalPrice},
+            commodity_retail_price = #{commodityRetailPrice},
+            commodity_unit_id = #{commodityUnitId},
+            commodity_is_sold = #{commodityIsSold},
+            commodity_is_recommend = #{commodityIsRecommend},
+            commodity_desc = #{commodityDesc},
+            commodity_inventory = #{commodityInventory},
+            commodity_is_lack = #{commodityIsLack},
+            category_first = #{categoryFirst},
+            category_second = #{categorySecond},
+            last_modified_by = #{lastModifiedBy},
+            gmt_modified = now(),
+            version = version+1
+        where commodity_id=#{commodityId}
+        and version = #{version}
+    </update>
+
+
+</mapper>

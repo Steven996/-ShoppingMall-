@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.mall.orderCenter.dao.OrderCenterMapper">
+    <resultMap id="order_list_map" type="com.neusoft.mall.orderCenter.entity.Order">
+        <id property="orderId" column="order_id"></id>
+        <result property="orderNumber" column="order_number"></result>
+        <result property="orderPrice" column="order_price"></result>
+        <result property="orderState" column="order_state"></result>
+        <result property="customerId" column="customer_id"></result>
+        <result property="orderDate" column="order_date"></result>
+        <result property="orderAddress" column="order_address"></result>
+        <result property="receiveTel" column="receive_tel"></result>
+        <result property="receiveContact" column="receive_contact"></result>
+        <result property="orderRemark" column="order_remark"></result>
+        <result property="createdBy" column="created_by"></result>
+        <result property="gmtCreate" column="gmt_create"></result>
+        <result property="lastModifiedBy" column="last_modified_by"></result>
+        <result property="gmtModified" column="gmt_modified"></result>
+        <result property="isDeleted" column="is_deleted"></result>
+        <result property="sortNo" column="sort_no"></result>
+        <result property="version" column="version"></result>
+    </resultMap>
+
+
+    <select id="getOrderList" resultMap="order_list_map">
+            select order_id,order_number,order_price,customer_id,order_state,
+            order_date,order_address,receive_tel,receive_contact,order_remark
+--             created_by,gmt_create,last_modified_by,gmt_modified,is_deleted,sort_no,version
+            from t_order where customer_id = #{customerid}
+    </select>
+
+    <select id="getSingleOrder" resultType="com.neusoft.mall.orderCenter.entity.Order">
+		 select order_id,order_number,order_price,order_state,tod.customer_id,customer_name,tod.gmt_create,order_date,
+        order_address,receive_tel,receive_contact,order_remark,tod.version
+        from t_order tod join t_customer tcus on tod.customer_id = tcus.customer_id where order_number=#{orderNumber}
+        and tod.customer_id=#{customerId}
+    </select>
+    <select id="getSingleOrderByOrderId" resultType="com.neusoft.mall.orderCenter.entity.Order">
+		 select order_id,order_number,order_price,order_state,tod.customer_id,customer_name,tod.gmt_create,order_date,
+        order_address,receive_tel,receive_contact,order_remark,tod.version
+        from t_order tod join t_customer tcus on tod.customer_id = tcus.customer_id where order_id=#{orderId}
+    </select>
+    <select id="getCommodityList" resultType="com.neusoft.mall.orderCenter.entity.OrderDetail">
+         select commodity_price,commodity_num,commodity_total_price,commodity_code,commodity_name,
+         commodity_first_picture from t_order_detail tod join t_commodity tcom on tod.commodity_id = tcom.commodity_id
+         where order_id=#{orderId}
+    </select>
+
+    <select id="getOrderListByDate" resultType="com.neusoft.mall.orderCenter.entity.Order">
+        select order_id,order_number,order_price,order_state,tod.customer_id,customer_name,tod.gmt_create,order_date,
+        order_address,receive_tel,receive_contact,order_remark,tod.version from
+        t_order tod join t_customer tcus on tod.customer_id = tcus.customer_id where tod.customer_id =#{customerid}
+        and order_date BETWEEN #{orderDateStart} and #{orderDateEnd}
+    </select>
+    <select id="getOrderListByDateAndState" resultType="com.neusoft.mall.orderCenter.entity.Order">
+        select order_id,order_number,order_price,order_state,tod.customer_id,customer_name,tod.gmt_create,order_date,
+        order_address,receive_tel,receive_contact,order_remark,tod.version from
+        t_order tod join t_customer tcus on tod.customer_id = tcus.customer_id where tod.customer_id =#{customerid}
+        and order_date BETWEEN #{orderDateStart} and #{orderDateEnd}
+        and order_state = #{orderState}
+    </select>
+    <select id="getOrderListByState" resultType="com.neusoft.mall.orderCenter.entity.Order">
+        select order_id,order_number,order_price,order_state,tod.customer_id,customer_name,tod.gmt_create,order_date,
+        order_address,receive_tel,receive_contact,order_remark,tod.version from
+        t_order tod join t_customer tcus on tod.customer_id = tcus.customer_id where tod.customer_id =#{customerid} and order_state = #{orderState}
+    </select>
+
+    <update id="updateOrderStatus" parameterType="string">
+        UPDATE t_order SET order_state = #{orderState} WHERE order_number = #{orderNumber}
+    </update>
+
+    <resultMap id="orderListByDateMap" type="com.neusoft.mall.orderCenter.entity.Order">
+            <id property="orderId" column="order_id"></id>
+            <result property="orderNumber" column="order_number"></result>
+            <result property="orderPrice" column="order_price"></result>
+            <result property="orderState" column="order_state"></result>
+            <result property="customerId" column="customer_id"></result>
+            <result property="gmtCreate" column="gmt_create"></result>
+            <result property="orderDate" column="order_date"></result>
+            <result property="orderAddress" column="order_address"></result>
+            <result property="receiveTel" column="receive_tel"></result>
+            <result property="receiveContact" column="receive_contact"></result>
+            <result property="orderRemark" column="order_remark"></result>
+            <result property="version" column="version"></result>
+<!--        <collection property="commodityList" ofType="com.neusoft.mall.orderCenter.entity.OrderDetail">-->
+<!--            <id property="orderDetailId" column="order_detail_id"></id>-->
+<!--            <result property="orderId" column="order_id"></result>-->
+<!--            <result property="commodityId" column="commodity_id"></result>-->
+<!--            <result property="commodityPrice" column="commodity_price"></result>-->
+<!--            <result property="commodityNum" column="commodity_num"></result>-->
+<!--            <result property="commodityTotalPrice" column="commodity_total_price"></result>-->
+<!--            <result property="commodityFirstPicture" column="commodity_first_picture"></result>-->
+<!--        </collection>-->
+    </resultMap>
+</mapper>

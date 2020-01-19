@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.neusoft.admin.accountAdmin.dao.AccountAdminDao">
+
+    <select id="userLogin"  resultType="int">
+        select count(*) from t_sys_user
+        where
+        user_account=#{userAccount} and
+        user_pwd=#{userPwd}
+        and  is_deleted=0
+    </select>
+
+    <select id="finduserPwd"  resultType="String">
+        select user_pwd from t_sys_user
+        where
+        user_account=#{userAccount}
+        and  is_deleted=0
+    </select>
+    <select id="getSysUser" parameterType="String" resultType="com.neusoft.admin.accountAdmin.entity.SysUser">
+        select * from t_sys_user where user_account = #{userAccount}
+    </select>
+</mapper>

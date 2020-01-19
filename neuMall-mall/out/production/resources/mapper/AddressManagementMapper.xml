@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.neusoft.mall.addressManagement.dao.AddressManagementDao">
+
+    <select id="getReceiveListDao" parameterType="String" resultType="com.neusoft.mall.addressManagement.entity.ReceiveVo">
+        select* from t_receive
+        where created_by=#{customerId}
+        and  is_deleted=0
+    </select>
+
+    <insert id="addReceive" parameterType="com.neusoft.mall.addressManagement.entity.Receive" >
+
+        insert into t_receive
+           (
+            receive_id,
+            region_province ,
+            region_city,
+            region_county ,
+            receive_detailed_address ,
+            receive_contact,
+            receive_tel,
+            receive_is_default,
+            created_by,
+            gmt_create,
+            last_modified_by,
+            gmt_modified,
+            is_deleted,
+            sort_no,
+            version
+          ) values (
+            #{receiveId},
+            #{regionProvince},
+            #{regionCity},
+            #{regionCounty},
+            #{receiveDetailedAddress},
+            #{receiveContact},
+            #{receiveTel},
+            #{receiveIsDefault},
+            #{createdBy},
+            now(),
+            #{lastModifiedBy},
+            now(),
+            0,
+            0,
+            0)
+    </insert>
+
+    <update id="updateReceive" parameterType="com.neusoft.mall.addressManagement.entity.Receive" >
+        update t_receive set
+            region_province=#{regionProvince} ,
+            region_city=#{regionCity},
+            region_county=#{regionCounty},
+            receive_detailed_address=#{receiveDetailedAddress} ,
+            receive_contact=#{receiveContact},
+            receive_tel=#{receiveTel},
+            version=#{version}
+        where receive_id=#{receiveId}
+        and  is_deleted=0
+    </update>
+
+    <update id="deleteReceive" parameterType="String" >
+        update t_receive set
+            is_deleted=1
+        where receive_id=#{receiveId}
+        and  is_deleted=0
+    </update>
+
+    <update id="updateReceiveByDefault">
+        update t_receive set
+            version=#{version},
+            receive_is_default=1
+        where receive_id=#{receiveId}
+        and  is_deleted=0
+    </update>
+
+    <update id="updateReceiveByDefaultVo">
+        update t_receive set
+            receive_is_default=0
+        where created_by=#{customerId}
+        and receive_is_default=1
+        and  is_deleted=0
+    </update>
+
+    <select id="getRegionDao" parameterType="String" resultType="com.neusoft.mall.addressManagement.entity.RegionVo">
+        select region_id,region_type,region_name from t_region
+        where parent_region_id=#{parentRegionID}
+        and  is_deleted=0
+    </select>
+
+    <select id="getRegionDao1" resultType="com.neusoft.mall.addressManagement.entity.RegionVo">
+        select region_id,region_type,region_name from t_region
+        where region_type = 1
+        and  is_deleted=0
+    </select>
+
+    <select id="findAddrename" resultType="String">
+        select region_name from t_region
+        where region_id = #{regionId}
+        and  is_deleted=0
+    </select>
+
+    <select id="getReceiveDetailDao" resultType="String">
+        select * from t_receive
+        where receive_id = #{receiveId}
+        and  is_deleted=0
+    </select>
+
+
+
+
+
+
+
+
+
+</mapper>

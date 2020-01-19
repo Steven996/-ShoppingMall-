@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.admin.user.dao.UserDao">
+    <!--统计用户账号数量-->
+    <select id="countUserAcct" parameterType="com.neusoft.admin.user.entity.UserInfo" resultType="int">
+        select count(user_account)
+        from t_sys_user
+        where is_deleted = 0
+        and user_account = #{userAccount}
+        <if test="userUuid != null and userUuid != ''">
+            and user_uuid != #{userUuid}
+        </if>
+    </select>
+    <!--新增用户-->
+    <insert id="saveUser" parameterType="com.neusoft.admin.user.entity.UserInfo">
+        insert into t_sys_user
+        (user_uuid,
+        user_account,
+        user_name,
+        user_pwd,
+        user_id_number,
+        user_tel,
+        user_gender,
+        user_is_used,
+        user_email,
+        user_comments,
+        created_by,
+        gmt_create,
+        last_modified_by,
+        gmt_modified,
+        is_deleted,
+        sort_no,
+        version
+        )
+        values
+        (#{userUuid},
+        #{userAccount},
+        #{userName},
+        #{userPwd},
+        #{userIdNumber},
+        #{userTel},
+        #{userGender},
+        1,
+        #{userEmail},
+        #{userComments},
+        #{createdBy},
+        NOW(),
+        #{createdBy},
+        NOW(),
+        0,
+        0,
+        0
+        )
+    </insert>
+
+    <!--获取用户信息-->
+    <select id="listUsers" parameterType="com.neusoft.admin.user.entity.UserInfoVO" resultType="com.neusoft.admin.user.entity.UserInfo">
+        select
+            user_uuid,
+            user_account,
+            user_name,
+            user_pwd,
+            user_id_number,
+            user_tel,
+            user_gender,
+            user_is_used,
+            user_email,
+            user_comments,
+            created_by,
+            gmt_create,
+            last_modified_by,
+            gmt_modified,
+            is_deleted,
+            sort_no,
+            version
+        from t_sys_user
+        where
+        is_deleted = 0
+        <if test="userGender != null and userGender != ''">
+            and user_gender = #{userGender}
+        </if>
+        <if test="userName != null and userName != ''">
+            and user_name like concat('%', #{userName}, '%')
+        </if>
+        order by gmt_create desc
+    </select>
+    <!--删除用户-->
+    <update id="deleteUser" parameterType="com.neusoft.admin.user.entity.UserBatchVO">
+        update t_sys_user
+        set is_deleted = 1,
+        gmt_modified = now(),
+        last_modified_by = #{lastModifiedBy},
+        version = version + 1
+        where user_uuid in
+        <foreach item="item" index="index" collection="userList" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+    <!--用户列表-->
+    <select id="getUserById" parameterType="java.lang.String" resultType="com.neusoft.admin.user.entity.UserInfo">
+        select
+            user_uuid,
+            user_account,
+            user_name,
+            user_pwd,
+            user_id_number,
+            user_tel,
+            user_gender,
+            user_is_used,
+            user_email,
+            user_comments,
+            created_by,
+            gmt_create,
+            last_modified_by,
+            gmt_modified,
+            is_deleted,
+            sort_no,
+            version
+        from t_sys_user
+        where user_uuid = #{userUuid}
+        and is_deleted = 0
+    </select>
+    <!--修改密码-->
+    <update id="updateUserPwd" parameterType="com.neusoft.admin.user.entity.UserInfo">
+        update t_sys_user
+        set user_pwd = #{userPwd},
+        gmt_modified = now(),
+        last_modified_by = #{lastModifiedBy},
+        version = version + 1
+        where user_uuid = #{userUuid}
+        and version = #{version}
+    </update>
+    <!--修改用户信息-->
+    <update id="updateUser" parameterType="com.neusoft.admin.user.entity.UserInfo">
+        update t_sys_user
+        set
+        user_name = #{userName},
+        user_id_number = #{userIdNumber},
+        user_tel = #{userTel},
+        user_gender = #{userGender},
+        user_is_used = #{userIsUsed},
+        user_email = #{userEmail},
+        user_comments = #{userComments},
+        gmt_modified = now(),
+        last_modified_by = #{lastModifiedBy},
+        version = version + 1
+        where user_uuid = #{userUuid}
+        and version = #{version}
+    </update>
+</mapper>

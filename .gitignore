@@ -1,0 +1,22 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+### Maven template
+/target
+
+### for IDEA
+/.idea/
+/.gradle/
+/*.iml
+
+### for Eclipse
+/.settings
+/.classpath
+/.project
+
+### ignore personal config file
+./neusoftMall/neuMall-mall/src/main/resources/application.yml

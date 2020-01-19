@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.neusoft.mall.customer.dao.AccountUserDao">
+
+    <update id="updatePassWord" parameterType="com.neusoft.mall.customer.entity.Customer" >
+        update t_customer set customer_password = #{customerPassword}
+        where customer_id=#{customerId}
+        and  is_deleted=0
+    </update>
+
+    <select id="findUser"  parameterType="com.neusoft.mall.customer.entity.Customer" resultType="int">
+        select count(*) from t_customer
+        where customer_number=#{customerNumber}
+        and customer_password = #{customerPassword}
+        and  is_deleted=0 and customer_is_used=0
+    </select>
+
+    <select id="findUserId"  parameterType="com.neusoft.mall.customer.entity.Customer" resultType="int">
+        select count(*) from t_customer
+        where customer_id=#{customerId}
+        and customer_password = #{customerPassword}
+        and  is_deleted=0 and customer_is_used=0
+    </select>
+
+    <select id="findUserNumber"  parameterType="com.neusoft.mall.customer.entity.Customer" resultType="int">
+        select count(*) from t_customer
+        where customer_number=#{customerNumber}
+        and  is_deleted=0
+    </select>
+
+    <select id="findUserPassWord"  parameterType="com.neusoft.mall.customer.entity.Customer" resultType="String">
+        select customer_password from t_customer
+        where customer_number=#{customerNumber}
+        and  is_deleted=0 and customer_is_used=0
+    </select>
+
+    <select id="findUserAll"  resultType="com.neusoft.mall.customer.entity.Customer">
+        select * from t_customer
+        where customer_number=#{customerNumber}
+        and  is_deleted=0
+    </select>
+
+    <insert id="addUser" parameterType="com.neusoft.mall.customer.entity.Customer">
+
+        insert into t_customer
+           (
+            customer_id,
+            customer_number ,
+            customer_password,
+            customer_name ,
+            customer_is_used ,
+            created_by,
+            gmt_create,
+            last_modified_by,
+            gmt_modified,
+            is_deleted,
+            sort_no,
+            version
+          ) values (
+            #{customerId},
+            #{customerNumber},
+            #{customerPassword},
+            #{customerName},
+            0,
+            #{createdBy},
+            now(),
+            #{lastModifiedBy},
+            now(),
+            0,
+            0,
+            0)
+    </insert>
+
+
+</mapper>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.mall.commoditycenter.dao.CommodityCenterDao">
+	<insert id="addShoppingCart" parameterType="com.neusoft.mall.shoppingCart.entity.Shop">
+    insert into t_shop values(#{shopId},#{commodityId},#{shopNumber},#{customerId},#{createdBy},now(),#{lastModifiedBy},now(),#{isDeleted},#{sortNo},#{version})
+</insert>
+	<select id="addOrderSuccess" parameterType="com.neusoft.mall.orderCenter.entity.Order" resultType="com.neusoft.mall.orderCenter.entity.Order">
+    select order_number,order_price from t_order where order_id = #{orderId}
+</select>
+    <select id="getPrice" parameterType="String" resultType="com.neusoft.mall.goods.entity.Commodity">
+        select commodity_retail_price,commodity_name,commodity_code,version from t_commodity where commodity_id = #{commodityId}
+    </select>
+	<select id="getPictureAddress" parameterType="String" resultType="com.neusoft.mall.goods.entity.CommodityPic">
+        select * from t_commodity_pic where commodity_id=#{commodityId}
+    </select>
+	<insert id="addOrder" parameterType="com.neusoft.mall.orderCenter.entity.Order">
+        insert into t_order values(#{orderId},#{orderNumber},#{orderPrice},#{customerId},#{orderState},#{orderDate},#{orderAddress},#{receiveTel},#{receiveContact},#{orderRemark},#{createdBy},now(),#{lastModifiedBy},now(),#{isDeleted},#{sortNo},#{version})
+    </insert>
+	<insert id="addOrderDetail" parameterType="com.neusoft.mall.orderCenter.entity.OrderDetail">
+        insert into t_order_detail values(#{orderDetailId},#{orderId},#{commodityId},#{commodityPrice},#{commodityNum},#{commodityTotalPrice},#{createdBy},now(),#{lastModifiedBy},now(),#{isDeleted},#{sortNo},#{version})
+    </insert>
+	<select id="getCommodityCenterTrading" parameterType="String" resultType="com.neusoft.mall.commoditycenter.entity.TradeVo">
+        select a.created_by,b.customer_name,a.gmt_create,a.commodity_price,a.commodity_num,a.version from t_order_detail a,t_customer b where a.created_by=b.customer_id and a.commodity_id = #{commodityId}
+    </select>
+	<select id="getCommodityCenterSimilar"  parameterType="String" resultType="com.neusoft.mall.goods.entity.CommodityDTO">
+        select c.commodity_code,p.picture_address,c.commodity_name,c.commodity_retail_price,c.version from t_commodity c,t_commodity_pic p where c.category_first = #{categoryFirst} and c.commodity_id=p.commodity_id
+    </select>
+	<select id="getCommodityList"  parameterType="com.neusoft.mall.commoditycenter.entity.CommodityVO" resultType="com.neusoft.mall.commoditycenter.entity.CommodityInfo">
+        SELECT
+        commodity_code,
+        t_commodity.commodity_id,
+        picture_address,
+        commodity_name,
+        category_first,
+        category_second,
+        commodity_retail_price,
+        commodity_original_price,
+        commodity_totalCount,
+        commodity_is_sold,
+        commodity_is_lack,
+        commodity_inventory,
+        commodity_unit_id
+        FROM
+        t_commodity JOIN t_commodity_pic on t_commodity.commodity_id = t_commodity_pic.commodity_id
+        WHERE
+        t_commodity.is_deleted = 0
+		<if test="categoryFirst != null and ''!=categoryFirst">
+			AND category_first = #{categoryFirst}
+		</if>
+
+		<if test="categorySecond != null and ''!=categorySecond">
+			AND category_second =  #{categorySecond}
+		</if>
+
+		<if test="sortingTotalCount != null and ''!=sortingTotalCount and sortingTotalCount == 1">
+			order by commodity_totalCount asc
+			<if test="sortingRetailPrice != null and ''!=sortingRetailPrice and sortingRetailPrice == 1">
+				,commodity_retail_price asc
+			</if>
+			<if test="sortingRetailPrice != null and ''!=sortingRetailPrice and sortingRetailPrice == 2">
+				,commodity_retail_price desc
+			</if>
+		</if>
+		<if test="sortingTotalCount != null and ''!=sortingTotalCount and sortingTotalCount == 2">
+			order by commodity_totalCount DESC
+			<if test="sortingRetailPrice != null and ''!=sortingRetailPrice and sortingRetailPrice == 1">
+				,commodity_retail_price asc
+			</if>
+			<if test="sortingRetailPrice != null and ''!=sortingRetailPrice and sortingRetailPrice == 2">
+				,commodity_retail_price desc
+			</if>
+		</if>
+		<if test="sortingTotalCount == null || ''==sortingTotalCount">
+			<if test="sortingRetailPrice != null and ''!=sortingRetailPrice and sortingRetailPrice == 1">
+				order by commodity_retail_price asc
+			</if>
+			<if test="sortingRetailPrice != null and ''!=sortingRetailPrice and sortingRetailPrice == 2">
+				order by commodity_retail_price desc
+			</if>
+		</if>
+	</select>
+
+	<select id="getCommodityCenterDeatil"  parameterType="com.neusoft.mall.commoditycenter.entity.CommodityDetailIn" resultType="com.neusoft.mall.commoditycenter.entity.CommodityDetail">
+		<!--SELECT-->
+			<!--commodity_code,-->
+			<!--commodity_desc,-->
+			<!--commodity_first_picture,-->
+			<!--commodity_name,-->
+			<!--commodity_retail_price,-->
+			<!--commodity_original_price,-->
+			<!--commodity_color,-->
+			<!--commodity_is_lack,-->
+			<!--commodity_unit_id,-->
+			<!--tcu.unit_name commityUnitName,-->
+			<!--commodity_totalCount,-->
+			<!--tcy.version,-->
+			<!--( CASE tct.collect_id WHEN NULL THEN 1 ELSE 0 END ) AS isCollect-->
+		<!--FROM-->
+			<!--t_commodity tcy-->
+			<!--JOIN t_commodity_unit tcu ON tcu.unit_id = tcy.commodity_unit_id-->
+			<!--left JOIN t_collect tct ON tcy.commodity_id = tct.commodity_id and tct.is_deleted=0-->
+		<!--WHERE-->
+			<!--tcy.commodity_id = #{commodityId}-->
+		<!--<if test="customerId != null and ''!=customerId">-->
+			<!--AND tct.customer_id = #{customerId}-->
+		<!--</if>-->
+		SELECT
+		commodity_code,
+		commodity_desc,
+		commodity_first_picture,
+		commodity_name,
+		commodity_retail_price,
+		commodity_original_price,
+		commodity_color,
+		commodity_is_lack,
+		commodity_unit_id,
+		tcu.unit_name commityUnitName,
+		commodity_totalCount,
+		tcy.version,
+		( CASE tct.collect_id WHEN NULL THEN 1 ELSE 0 END ) AS isCollect
+		FROM
+		t_commodity tcy
+		JOIN t_commodity_unit tcu ON tcu.unit_id = tcy.commodity_unit_id
+		left JOIN t_collect tct ON tcy.commodity_id = tct.commodity_id and tct.is_deleted=0
+			<if test="customerId != null and ''!=customerId">
+				AND tct.customer_id = #{customerId}
+			</if>
+		WHERE
+		tcy.commodity_id =  #{commodityId}
+
+	</select>
+
+	<select id="getCommodityCentPic"   parameterType="com.neusoft.mall.commoditycenter.entity.CommodityDetailIn" resultType="com.neusoft.mall.commoditycenter.entity.CommodityPicDetail">
+		SELECT
+			tcmp.picture_address,picture_is_fist_picture
+		FROM
+			t_commodity_pic tcmp
+			JOIN t_commodity tcy ON tcy.commodity_id = tcmp.commodity_id
+		WHERE
+			tcy.commodity_id = #{commodityId}
+	</select>
+
+	<insert id="commodityCollection" parameterType="com.neusoft.mall.commoditycenter.entity.CommodityCollect">
+	   insert into t_collect
+	   values(#{collectId},#{createdBy},
+			  #{createdBy},now(),#{createdBy},
+			  now(),0,0,0,#{commodityId})
+	</insert>
+
+	<select id="commodityCollectionList" parameterType="com.neusoft.mall.commoditycenter.entity.CommodityInfo" resultType="com.neusoft.mall.commoditycenter.entity.CommodityInfo">
+		SELECT
+		tct.commodity_id,
+		customer_id,
+		picture_address,
+		commodity_name,
+		commodity_retail_price
+		FROM
+		t_collect tct
+		JOIN t_commodity ON tct.commodity_id = t_commodity.commodity_id
+		JOIN t_commodity_pic ON tct.commodity_id = t_commodity_pic.commodity_id
+		WHERE
+		tct.is_deleted = 0
+		AND customer_id = #{customerId}
+		<if test="commodityName != null and ''!=commodityName">
+			AND commodity_name = #{commodityName}
+		</if>
+	</select>
+
+	<!--<delete id="commodityUnCollection"  parameterType="com.neusoft.mall.commoditycenter.entity.CommodityCollect" >-->
+	<!--delete FROM t_collect WHERE customer_id=#{createdBy} and commodity_id =#{commodityId}-->
+	<!--</delete>-->
+	<update id="commodityUnCollection" parameterType="com.neusoft.mall.commoditycenter.entity.CommodityCollect">
+		UPDATE t_collect
+	SET is_deleted = 1,
+	gmt_modified = now( ),
+	last_modified_by = #{createdBy},
+	version = version + 1
+	WHERE
+		customer_id = #{createdBy} AND commodity_id = #{commodityId}
+	</update>
+
+</mapper>

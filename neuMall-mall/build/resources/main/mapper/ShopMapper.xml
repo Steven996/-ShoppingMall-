@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.neusoft.mall.shoppingCart.dao.ShoppingCartDao">
+    <select id="findShopAll" parameterType="com.neusoft.mall.shoppingCart.entity.Shop" resultType="com.neusoft.mall.shoppingCart.entity.ShopVo">
+        select
+              t_shop.commodity_id,t_commodity.commodity_code,
+              t_commodity.commodity_first_picture as pictureAddress,
+              t_commodity.commodity_name,t_commodity.commodity_retail_price,
+              t_shop.shop_number as 'commodity_num',t_shop.shop_id
+        from
+                  t_shop,t_commodity
+        where
+              t_shop.customer_id=#{customerId} and  t_shop.is_deleted=0 and
+              t_commodity.commodity_id=t_shop.commodity_id and t_commodity.is_deleted=0
+    </select>
+
+    <update id="deleteShoppingCart" >
+        update t_shop set is_deleted = 1 where shop_id=#{shopId} and is_deleted=0
+    </update>
+
+</mapper>

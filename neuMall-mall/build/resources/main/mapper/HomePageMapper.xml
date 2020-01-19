@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.neusoft.mall.homePage.dao.HomePageMapper">
+    <select id="getRecommondCommodityList" resultType="com.neusoft.mall.goods.entity.Commodity">
+        SELECT commodity_code, tcp.picture_address,commodity_name,category_first,
+        category_second,commodity_retail_price,commodity_original_price
+        ,commodity_totalCount,commodity_is_sold,commodity_is_lack, commodity_inventory,
+        commodity_unit_id,tc.version
+        from t_commodity tc join t_commodity_pic tcp on tc.commodity_id = tcp.commodity_id
+        where commodity_is_recommend = #{commodityIsRecommend}
+    </select>
+    
+    <select id="getBuyCommodityList" resultType="com.neusoft.mall.goods.entity.Commodity">
+        select tcom.commodity_id,tcom.commodity_code,tcp.picture_address,tcom.commodity_name,tcom.commodity_retail_price,tod.version
+        from t_order tod join t_order_detail todd on tod.order_id = todd.order_id join t_commodity tcom on todd.commodity_id = tcom.commodity_id
+        join t_commodity_pic tcp on tcom.commodity_id = tcp.commodity_id where tod.customer_id = #{customerId}
+    </select>
+
+    <select id="getClassifyList" resultType="com.neusoft.mall.category.entity.Category">
+        SELECT category_name,category_id, category_parent_id,category_level,
+        category_remark,sort_no,version
+        from
+        t_category where category_parent_id = #{categoryParentId}
+    </select>
+
+</mapper>

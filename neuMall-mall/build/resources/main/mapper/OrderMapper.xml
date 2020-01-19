@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.neusoft.mall.order.dao.OrderDao">
+    <select id="getOrders" parameterType="com.neusoft.mall.orderCenter.entity.Order" resultType="com.neusoft.mall.orderCenter.entity.Order">
+        SELECT
+        order_id,
+        order_number,
+        order_price,
+        t_order.customer_id,
+        customer_name,
+        order_state,
+        order_date,
+        receive_tel,
+        order_address,
+        receive_contact,
+        order_remark,
+        t_order.version
+    FROM
+        t_order
+        JOIN t_customer ON t_order.customer_id = t_customer.customer_id
+    WHERE
+        order_number = #{orderNumber}
+        AND order_state = #{orderState}
+        AND order_date BETWEEN '#{orderDateStart}'
+        AND '#{orderDateEnd}'
+	 </select>
+    <!--<select id="getOrdersPro" parameterType="com.neusoft.mall.orderCenter.entity.Order" resultType="com.neusoft.mall.orderCenter.entity.Order">-->
+    <!--SELECT * FROM `t_order` join t_customer on t_order.customer_id = t_customer.customer_id where order_number = #{orderNumber}     </select>-->
+    <select id="getOrderDetail" parameterType="String" resultType="com.neusoft.mall.orderCenter.entity.Order">
+     select * from t_order tor join t_customer tc on tor.customer_id = tc.customer_id where tor.order_id = #{orderId}
+    </select>
+    <select id="getOrderDetailPro" parameterType="String" resultType="com.neusoft.mall.orderCenter.entity.OrderDetail">
+     select * from t_order_detail join t_commodity on t_order_detail.commodity_id = t_commodity.commodity_id where t_order_detail.order_id = #{orderId}
+    </select>
+    <update id="updateOrderStatus" parameterType="com.neusoft.mall.orderCenter.entity.Order">
+     update order_state from t_order
+    </update>
+</mapper>

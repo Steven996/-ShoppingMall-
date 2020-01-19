@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: neuMall-admin
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://39.105.73.110:3306/mall?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    username: root
+    password: root
+  redis:
+    # Redis服务器地址
+    host: 39.105.73.110
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: hanjingzhan1314
+    jedis:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 200
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 0
+eureka:
+  client:
+    service-url:
+      dafaultZone: http://127.0.0.1:8761/eureka
+server:
+  port: 8081
+mybatis:
+  #指定全局配置文件的位置
+  mapper-locations: classpath:mapper/*Mapper.xml
+  #开启驼峰命名转换
+  configuration:
+    map-underscore-to-camel-case: true
+logging:
+  level:
+    com.neusoft.admin : debug   # 打印sql
+rootId: 0
+
+
+
+
+

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script th:src="@{/jquery-1.8.0.min.js}"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="panel" data-options="fit:true,border:false" style="overflow:scroll;overflow-x:hidden">
+    <form id="editInterviewForm" style=" margin: 27px 25px;" enctype="multipart/form-data">
+
+        <table class="table" style="margin: 1px 0px">
+
+            <tr id="files">
+                <td align="right">附件：</td>
+                <td>
+                    <input type="file" name="file_info" multiple="multiple" id="file_info" size="60"
+                           style="width:171px">&nbsp;
+                </td>
+            </tr>
+            <tr id="">
+                <td align="right"></td>
+                <td>
+                    <div onClick="upload()">上传</div>
+                </td>
+            </tr>
+            <tr id="file">
+                <td align="right">上传结果：</td>
+                <td>
+                    <img name="fileUrl" id="fileUrl" src="">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div onClick="download()">下载</div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<script type="text/javascript">
+    var fileUrlPath;
+    //访问路径：http://localhost:8089/index
+    function upload() {
+        var formData = new FormData();
+        var fileList = $("#file_info")[0].files[0];
+        formData.append("file", fileList);
+        $.ajax({
+            type: 'post',
+            url: '/test/uploadFile',
+            data: formData,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                console.log(result);
+                if (1 == result.code) {
+                    $("#fileUrl").attr("src", result.fileUrl);
+                    fileUrlPath = result.fileUrl;
+                }
+            }
+        });
+    }
+
+    function download() {
+        var date={};
+        date.fileUrl = fileUrlPath;
+        $.ajax({
+            type: 'post',
+            url: '/test/downLoadFile',
+            data: date,
+            dataType: 'json',
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                /*console.log(result);
+                if (1 == result.code) {
+                    $("#fileUrl").attr("src", result.fileUrl);
+                    fileUrlPath = result.fileUrl;
+                }*/
+            }
+        });
+    }
+
+</script>
+</body>
+</html>
